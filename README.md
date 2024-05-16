@@ -1,4 +1,5 @@
 # WPF MediaKit
+Now support .Net6
 
 This is the official new home of WPF MediaKit (the former was https://wpfmediakit.codeplex.com/). A library to quickly build DirectShow media player controls in WPF. The kit comes with a video player MediaUriElement (a WPF MediaElement replacement), a VideoCaptureElement for web cams and a DVDPlayerElement that plays DVDs and supports interactive menus.
 
