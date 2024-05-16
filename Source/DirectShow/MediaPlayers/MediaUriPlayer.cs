@@ -201,7 +201,7 @@ namespace WPFMediaKit.DirectShow.MediaPlayers
 
 
 
-                    filterOutputString += string.Format("{0:X8}", Marshal.GetIUnknownForObjectInContext(filters[0]).ToInt32()) + " ";
+                    filterOutputString += string.Format("{0:X8}", GetComObjectPointerAsInt(filters[0])) + " ";
 
                     filterOutputString += filterInfo.achName + Environment.NewLine;
 
@@ -225,7 +225,7 @@ namespace WPFMediaKit.DirectShow.MediaPlayers
                             prefix = "[Out] ";
 
 
-                        filterOutputString += string.Format("{0:X8}", Marshal.GetIUnknownForObjectInContext(pins[0]).ToInt32()) + " ";
+                        filterOutputString += string.Format("{0:X8}", GetComObjectPointerAsInt(pins[0])) + " ";
                         filterOutputString += prefix + pinInfo.name + Environment.NewLine;
 
                         Marshal.ReleaseComObject(pins[0]);
@@ -250,6 +250,25 @@ namespace WPFMediaKit.DirectShow.MediaPlayers
             file2.AutoFlush = true;
             file2.Write(filterOutputString);
             file2.Close();
+        }
+
+        [DllImport("ole32.dll")]
+        private static extern int CreateStreamOnHGlobal(IntPtr hGlobal, bool fDeleteOnRelease, out IntPtr ppstm);
+
+        [DllImport("ole32.dll")]
+        private static extern int GetHGlobalFromStream(IntPtr pstm, out IntPtr phglobal);
+
+        public static int GetComObjectPointerAsInt(object comObject)
+        {
+            IntPtr pUnk = Marshal.GetIUnknownForObject(comObject);
+            IntPtr pStream;
+            CreateStreamOnHGlobal(IntPtr.Zero, true, out pStream);
+            IntPtr pData;
+            GetHGlobalFromStream(pStream, out pData);
+            int pointerAsInt = pData.ToInt32();
+            Marshal.Release(pUnk);
+            Marshal.Release(pStream);
+            return pointerAsInt;
         }
 
         public string Splitter { get; set; }
